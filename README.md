@@ -12,8 +12,8 @@ After downloading the flat files, the following code files will extract selected
 The top sections of each of the code files assign the location of the selected variables. These code files are almost identical; however, not all variables are in the same location of the HCRIS worksheets under v1996 and v2010. New variables can easily be added if you know the worksheet, line number, and column number of the relevant variable. If the variable is numeric, it should be in the numeric tables, and if its a character, it should be in the alphanumeric tables. This information should be indicated in the "source" column when assigning each variable's location, with possible values of 'numeric' or 'alpha'. 
 
 
-## Master Code File
-There is also a master code file that calls each of the individual code files and organizes the resulting data into unique hospital/year combinations: [_HCRIS_Data.R](https://github.com/imccart/HCRIS/blob/master/data-code/_HCRIS_Data.R)
+## Main Code File
+There is also a primary code file that calls each of the individual code files and organizes the resulting data into unique hospital/year combinations: [_HCRIS_Data.R](https://github.com/imccart/HCRIS/blob/master/data-code/_HCRIS_Data.R)
 
 There are two common issues with the HCRIS data that are resolved (at least, attempted to be resolved) in the master code file. There are of course other issues that you will encounter when trying to work with these data, including missing variables in some years and clear evidence of misreporting in some cases, not to mention just very noisy data in general.
 
