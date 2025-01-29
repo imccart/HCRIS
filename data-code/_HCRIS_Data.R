@@ -2,7 +2,7 @@
 
 ## Author:        Ian McCarthy
 ## Date Created:  5/30/2019
-## Date Edited:   9/8/2022
+## Date Edited:   1/29/2025
 ## Notes:         -- v1996 of the HCRIS forms run through 2011 due to lags 
 ##                   in processing and hospital fiscal years
 
@@ -90,7 +90,7 @@ unique.hcris2 =
             hrrp_payment=sum(hrrp_payment), fy_start=min(fy_start), fy_end=max(fy_end),
             date_processed=max(date_processed), date_created=min(date_created), 
             street=first(street), city=first(city), state=first(state),
-            zip=first(zip), county=first(county),
+            zip=first(zip), county=first(county), name=first(name),
             uncomp_care = sum(uncomp_care), tot_uncomp_care_charges=sum(tot_uncomp_care_charges),
             tot_uncomp_care_partial_pmts=sum(tot_uncomp_care_partial_pmts), 
             bad_debt=sum(bad_debt), cost_to_charge=first(cost_to_charge),
@@ -142,7 +142,7 @@ unique.hcris4 =
             hrrp_payment=sum(hrrp_payment), fy_start=min(fy_start), fy_end=max(fy_end),
             date_processed=max(date_processed), date_created=min(date_created), 
             street=first(street), city=first(city), state=first(state),
-            zip=first(zip), county=first(county),
+            zip=first(zip), county=first(county), name=first(name),
             uncomp_care = sum(uncomp_care), tot_uncomp_care_charges=sum(tot_uncomp_care_charges),
             tot_uncomp_care_partial_pmts=sum(tot_uncomp_care_partial_pmts), 
             bad_debt=sum(bad_debt), cost_to_charge=first(cost_to_charge),
