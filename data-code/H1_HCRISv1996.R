@@ -25,6 +25,14 @@ hcris.vars = rbind(hcris.vars,c('uncomp_care','S100000','03000','0100','numeric'
 hcris.vars = rbind(hcris.vars,c('cost_to_charge','S100000','02400','0100','numeric'))
 hcris.vars = rbind(hcris.vars,c('new_cap_ass','A700002','00900','0200','numeric'))
 hcris.vars = rbind(hcris.vars,c('cash','G000000','00100','0100','numeric'))
+hcris.vars = rbind(hcris.vars,c('fixed_assets','G000000','02100','0100','numeric'))
+hcris.vars = rbind(hcris.vars,c('depr_land','G000000','01301','0100','numeric'))
+hcris.vars = rbind(hcris.vars,c('depr_bldg','G000000','01401','0100','numeric'))
+hcris.vars = rbind(hcris.vars,c('depr_lease','G000000','01501','0100','numeric'))
+hcris.vars = rbind(hcris.vars,c('depr_fixed_equip','G000000','01601','0100','numeric'))
+hcris.vars = rbind(hcris.vars,c('depr_auto','G000000','01701','0100','numeric'))
+hcris.vars = rbind(hcris.vars,c('depr_major_equip','G000000','01801','0100','numeric'))
+hcris.vars = rbind(hcris.vars,c('depr_minor_equip','G000000','01901','0100','numeric'))
 colnames(hcris.vars)=c("variable","WKSHT_CD","LINE_NUM","CLMN_NUM","source")
 
 
