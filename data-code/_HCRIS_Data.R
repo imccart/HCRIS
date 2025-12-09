@@ -21,13 +21,13 @@ source('data-code/H2_HCRISv2010.R')
 ## create missing variables for columns introduced in v2010 of hcris forms
 final.hcris.v1996 <- final.hcris.v1996 %>%
   mutate(hvbp_payment=NA, hrrp_payment=NA, tot_uncomp_care_charges=NA, tot_uncomp_care_partial_pmts=NA, bad_debt=NA,
-         accum_dep = depr_land + depr_bldg + depr_lease + depr_fixed_equip + depr_auto + depr_major_equip + depr_minor_equip) %>%
+         accum_dep = abs(depr_land) + abs(depr_bldg) + abs(depr_lease) + abs(depr_fixed_equip) + abs(depr_auto) + abs(depr_major_equip) + abs(depr_minor_equip)) %>%
   select(-c(starts_with("depr_")))
 
 ## create missing variables for columns in v1996 that we have to compute in v2010
 final.hcris.v2010 <- final.hcris.v2010 %>%
   mutate(uncomp_care=tot_uncomp_care_charges - tot_uncomp_care_partial_pmts + bad_debt,
-         accum_dep = depr_land + depr_bldg + depr_lease + depr_fixed_equip + depr_auto + depr_major_equip + depr_minor_equip + depr_HIT) %>%
+         accum_dep = abs(depr_land) + abs(depr_bldg) + abs(depr_lease) + abs(depr_fixed_equip) + abs(depr_auto) + abs(depr_major_equip) + abs(depr_minor_equip) + abs(depr_HIT)) %>%
   select(-c(starts_with("depr_")))
 
 ## combine v1996 and v2010 hcris forms, and sort by provider_number/year
