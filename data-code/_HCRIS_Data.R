@@ -2,7 +2,7 @@
 
 ## Author:        Ian McCarthy
 ## Date Created:  5/30/2019
-## Date Edited:   12/8/2025
+## Date Edited:   12/19/2025
 ## Notes:         -- v1996 of the HCRIS forms run through 2011 due to lags 
 ##                   in processing and hospital fiscal years
 
@@ -102,7 +102,9 @@ unique.hcris2 <-
             cash=sum(cash),
             net_pat_rev=sum(net_pat_rev),
             fixed_assets=sum(fixed_assets),
-            accum_dep=sum(accum_dep)
+            accum_dep=sum(accum_dep),
+            current_assets=sum(current_assets),
+            current_liabilities=sum(current_liabilities)
             ) %>%
   mutate(source='total for year')
 
@@ -131,7 +133,8 @@ duplicate.hcris3 <-
               "icu_charges", "ancillary_charges", "tot_discharges", "mcare_discharges",
               "mcaid_discharges", "tot_mcare_payment", "secondary_mcare_payment",
               "hvbp_payment", "hrrp_payment", "uncomp_care", "tot_uncomp_care_charges", "bad_debt",
-              "tot_uncomp_care_partial_pmts", "new_cap_ass", "cash", "net_pat_rev", "fixed_assets","accum_dep"),
+              "tot_uncomp_care_partial_pmts", "new_cap_ass", "cash", "net_pat_rev", "fixed_assets","accum_dep",
+              "current_assets","current_liabilities"),
             list(~ .*(time_diff/total_days)))
 
 ## form weighted average of values for each fiscal year
@@ -156,7 +159,8 @@ unique.hcris4 <-
             new_cap_ass=sum(new_cap_ass),
             cash=sum(cash),
             net_pat_rev=sum(net_pat_rev),
-            fixed_assets=sum(fixed_assets), accum_dep=sum(accum_dep)) %>%
+            fixed_assets=sum(fixed_assets), accum_dep=sum(accum_dep),
+            current_assets=sum(current_assets), current_liabilities=sum(current_liabilities)) %>%
   mutate(source='weighted_average')
 
   
