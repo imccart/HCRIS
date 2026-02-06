@@ -9,14 +9,29 @@
 
 # Preliminaries -----------------------------------------------------------
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load(tidyverse, ggplot2, dplyr, lubridate)
+pacman::p_load(tidyverse, ggplot2, dplyr, lubridate, haven)
+
+# Helpers (avoid -Inf and all-NA sums)
+na_sum <- function(x) if (all(is.na(x))) NA_real_ else sum(x, na.rm = TRUE)
+na_max <- function(x) if (all(is.na(x))) NA_real_ else max(x, na.rm = TRUE)
+na_min <- function(x) if (all(is.na(x))) NA_real_ else min(x, na.rm = TRUE)
 
 
 # Import data -------------------------------------------------------------
 
-## create v1996 and v2010 data
+## create PPS, v1996, and v2010 data
+source('data-code/H3_HCRIS_PPS.R')
 source('data-code/H1_HCRISv1996.R')
 source('data-code/H2_HCRISv2010.R')
+
+## create missing variables for PPS data (same treatment as v1996)
+final.hcris.pps <- final.hcris.pps %>%
+  mutate(hvbp_payment=NA, hrrp_payment=NA, tot_uncomp_care_charges=NA, tot_uncomp_care_partial_pmts=NA, bad_debt=NA,
+         accum_dep = if_else(
+           if_all(starts_with("depr_"), is.na),
+           NA_real_,
+           rowSums(across(starts_with("depr_"), ~ abs(.x)), na.rm = TRUE))) %>%
+  select(-c(starts_with("depr_")))
 
 ## create missing variables for columns introduced in v2010 of hcris forms
 final.hcris.v1996 <- final.hcris.v1996 %>%
@@ -36,11 +51,22 @@ final.hcris.v2010 <- final.hcris.v2010 %>%
            rowSums(across(starts_with("depr_"), ~ abs(.x)), na.rm = TRUE))) %>%
   select(-c(starts_with("depr_")))
 
-## combine v1996 and v2010 hcris forms, and sort by provider_number/year
-final.hcris=rbind(final.hcris.v1996,final.hcris.v2010) %>%
+## combine PPS, v1996, and v2010 hcris forms, and sort by provider_number/year
+final.hcris=rbind(final.hcris.pps,final.hcris.v1996,final.hcris.v2010) %>%
   mutate(fy_end=mdy(fy_end),fy_start=mdy(fy_start),
          date_processed=mdy(date_processed),date_created=mdy(date_created),
          tot_discounts=abs(tot_discounts), hrrp_payment=abs(hrrp_payment)) %>%
+  mutate(source_priority = case_when(
+    data_source == "v2010" ~ 3L,
+    data_source == "v1996" ~ 2L,
+    data_source == "pps" ~ 1L,
+    TRUE ~ 0L
+  )) %>%
+  group_by(provider_number, fy_start, fy_end) %>%
+  arrange(desc(source_priority), desc(date_created), .by_group=TRUE) %>%
+  slice(1) %>%
+  ungroup() %>%
+  select(-source_priority) %>%
   mutate(fyear=year(fy_end)) %>%
   arrange(provider_number,fyear) %>%
   select(-year)
@@ -91,26 +117,26 @@ unique.hcris2 <-
   group_by(provider_number, fyear) %>%
   mutate(hrrp_payment=if_else(is.na(hrrp_payment),0,hrrp_payment),
          hvbp_payment=if_else(is.na(hvbp_payment),0,hvbp_payment)) %>%
-  summarize(beds=max(beds), tot_charges=sum(tot_charges), tot_discounts=sum(tot_discounts),
-            tot_operating_exp=sum(tot_operating_exp), ip_charges=sum(ip_charges),
-            icu_charges=sum(icu_charges), ancillary_charges=sum(ancillary_charges),
-            tot_discharges=sum(tot_discharges), mcare_discharges=sum(mcare_discharges),
-            mcaid_discharges=sum(mcaid_discharges), tot_mcare_payment=sum(tot_mcare_payment),
-            secondary_mcare_payment=sum(secondary_mcare_payment), hvbp_payment=sum(hvbp_payment),
-            hrrp_payment=sum(hrrp_payment), fy_start=min(fy_start), fy_end=max(fy_end),
-            date_processed=max(date_processed), date_created=min(date_created), 
+  summarize(beds=na_max(beds), tot_charges=na_sum(tot_charges), tot_discounts=na_sum(tot_discounts),
+            tot_operating_exp=na_sum(tot_operating_exp), ip_charges=na_sum(ip_charges),
+            icu_charges=na_sum(icu_charges), ancillary_charges=na_sum(ancillary_charges),
+            tot_discharges=na_sum(tot_discharges), mcare_discharges=na_sum(mcare_discharges),
+            mcaid_discharges=na_sum(mcaid_discharges), tot_mcare_payment=na_sum(tot_mcare_payment),
+            secondary_mcare_payment=na_sum(secondary_mcare_payment), hvbp_payment=na_sum(hvbp_payment),
+            hrrp_payment=na_sum(hrrp_payment), fy_start=na_min(fy_start), fy_end=na_max(fy_end),
+            date_processed=na_max(date_processed), date_created=na_min(date_created), 
             street=first(street), city=first(city), state=first(state),
             zip=first(zip), county=first(county), name=first(name),
-            uncomp_care = sum(uncomp_care), tot_uncomp_care_charges=sum(tot_uncomp_care_charges),
-            tot_uncomp_care_partial_pmts=sum(tot_uncomp_care_partial_pmts), 
-            bad_debt=sum(bad_debt), cost_to_charge=first(cost_to_charge),
-            new_cap_ass=sum(new_cap_ass), 
-            cash=sum(cash),
-            net_pat_rev=sum(net_pat_rev),
-            fixed_assets=sum(fixed_assets),
-            accum_dep=sum(accum_dep),
-            current_assets=sum(current_assets),
-            current_liabilities=sum(current_liabilities)
+            uncomp_care = na_sum(uncomp_care), tot_uncomp_care_charges=na_sum(tot_uncomp_care_charges),
+            tot_uncomp_care_partial_pmts=na_sum(tot_uncomp_care_partial_pmts), 
+            bad_debt=na_sum(bad_debt), cost_to_charge=first(cost_to_charge),
+            new_cap_ass=na_sum(new_cap_ass), 
+            cash=na_sum(cash),
+            net_pat_rev=na_sum(net_pat_rev),
+            fixed_assets=na_sum(fixed_assets),
+            accum_dep=na_sum(accum_dep),
+            current_assets=na_sum(current_assets),
+            current_liabilities=na_sum(current_liabilities)
             ) %>%
   mutate(source='total for year')
 
@@ -130,7 +156,7 @@ unique.hcris3 <-
 
 ## identify remaining hospitals (those with more than one report that cover more than one full year and that do
 ##   not appear to have one report that takes up the full year)
-## these hospitals appear to have changed their fiscal years
+##   these hospitals appear to have changed their fiscal years
 duplicate.hcris3 <- anti_join(duplicate.hcris2, unique.hcris3, by=c("provider_number", "fyear"))
 duplicate.hcris3 <- 
   duplicate.hcris3 %>%
@@ -149,24 +175,24 @@ unique.hcris4 <-
   group_by(provider_number, fyear) %>%
   mutate(hrrp_payment=if_else(is.na(hrrp_payment),0,hrrp_payment),
          hvbp_payment=if_else(is.na(hvbp_payment),0,hvbp_payment)) %>%
-  summarize(beds=max(beds), tot_charges=sum(tot_charges), tot_discounts=sum(tot_discounts),
-            tot_operating_exp=sum(tot_operating_exp), ip_charges=sum(ip_charges),
-            icu_charges=sum(icu_charges), ancillary_charges=sum(ancillary_charges),
-            tot_discharges=sum(tot_discharges), mcare_discharges=sum(mcare_discharges),
-            mcaid_discharges=sum(mcaid_discharges), tot_mcare_payment=sum(tot_mcare_payment),
-            secondary_mcare_payment=sum(secondary_mcare_payment), hvbp_payment=sum(hvbp_payment),
-            hrrp_payment=sum(hrrp_payment), fy_start=min(fy_start), fy_end=max(fy_end),
-            date_processed=max(date_processed), date_created=min(date_created), 
+  summarize(beds=na_max(beds), tot_charges=na_sum(tot_charges), tot_discounts=na_sum(tot_discounts),
+            tot_operating_exp=na_sum(tot_operating_exp), ip_charges=na_sum(ip_charges),
+            icu_charges=na_sum(icu_charges), ancillary_charges=na_sum(ancillary_charges),
+            tot_discharges=na_sum(tot_discharges), mcare_discharges=na_sum(mcare_discharges),
+            mcaid_discharges=na_sum(mcaid_discharges), tot_mcare_payment=na_sum(tot_mcare_payment),
+            secondary_mcare_payment=na_sum(secondary_mcare_payment), hvbp_payment=na_sum(hvbp_payment),
+            hrrp_payment=na_sum(hrrp_payment), fy_start=na_min(fy_start), fy_end=na_max(fy_end),
+            date_processed=na_max(date_processed), date_created=na_min(date_created), 
             street=first(street), city=first(city), state=first(state),
             zip=first(zip), county=first(county), name=first(name),
-            uncomp_care = sum(uncomp_care), tot_uncomp_care_charges=sum(tot_uncomp_care_charges),
-            tot_uncomp_care_partial_pmts=sum(tot_uncomp_care_partial_pmts), 
-            bad_debt=sum(bad_debt), cost_to_charge=first(cost_to_charge),
-            new_cap_ass=sum(new_cap_ass),
-            cash=sum(cash),
-            net_pat_rev=sum(net_pat_rev),
-            fixed_assets=sum(fixed_assets), accum_dep=sum(accum_dep),
-            current_assets=sum(current_assets), current_liabilities=sum(current_liabilities)) %>%
+            uncomp_care = na_sum(uncomp_care), tot_uncomp_care_charges=na_sum(tot_uncomp_care_charges),
+            tot_uncomp_care_partial_pmts=na_sum(tot_uncomp_care_partial_pmts), 
+            bad_debt=na_sum(bad_debt), cost_to_charge=first(cost_to_charge),
+            new_cap_ass=na_sum(new_cap_ass),
+            cash=na_sum(cash),
+            net_pat_rev=na_sum(net_pat_rev),
+            fixed_assets=na_sum(fixed_assets), accum_dep=na_sum(accum_dep),
+            current_assets=na_sum(current_assets), current_liabilities=na_sum(current_liabilities)) %>%
   mutate(source='weighted_average')
 
   

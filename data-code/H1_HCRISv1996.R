@@ -55,7 +55,7 @@ for (i in 1998:2011) {
     select(report=RPT_REC_NUM, provider_number=PRVDR_NUM, npi=NPI, 
            fy_start=FY_BGN_DT, fy_end=FY_END_DT, date_processed=PROC_DT, 
            date_created=FI_CREAT_DT, status=RPT_STUS_CD) %>%
-    mutate(year=i)
+    mutate(year=i, data_source="v1996")
   
   for (v in 1:nrow(hcris.vars)) {
     hcris.data <- get(paste("HCRIS.",hcris.vars[v,5],sep=""))

@@ -1,0 +1,39 @@
+hcris_variable,pps_field,pps_label,notes
+provider_number,f1,provider number - hospital,
+name,f18,hospital name,
+fy_start,f22,cost reporting period begin date,format CCYYMMDD
+fy_end,f23,cost reporting period end date,format CCYYMMDD
+date_created,f69,file creation date,format CCYYMMDD
+status,f74,cost report status,
+beds,f85,total hospital beds,
+tot_discharges,f178,total discharges all patients hospital,
+mcare_discharges,f172,medicare discharges total hospital,
+mcaid_discharges,f175,medicaid discharges total hospital,
+tot_charges,f2135,total patient revenue,Worksheet G-3 line 1
+tot_discounts,f2136,contractual allowances and discounts,Worksheet G-3 line 2
+net_pat_rev,f2137,net patient revenues,Worksheet G-3 line 3
+tot_operating_exp,f2138,total operating expenses,Worksheet G-3 line 4
+ip_charges,f2133,total patient revenue inpatient,Worksheet G-3 inpatient subtotal
+icu_charges,f2108,icu revenue,from revenue/expense statement
+ancillary_charges,f2115,inpatient ancillary services,from revenue/expense statement
+tot_mcare_payment,f1833,total payments lines 8-15,Worksheet E Part A line 16
+secondary_mcare_payment,f1834,primary payer payments,Worksheet E Part A line 17; payments from other insurers
+cash,f2038,cash on hand and in banks,Worksheet G balance sheet
+current_assets,f2048,total current assets facility,Worksheet G balance sheet
+current_liabilities,f2081,total current liabilities facility,Worksheet G balance sheet
+fixed_assets,f2066,total fixed assets facility,Worksheet G balance sheet
+new_cap_ass,f1473,total purchases facility,Worksheet A-7 total purchases; alternative to HCRIS A700002 line 9
+cost_to_charge,NA,not directly available,need to compute from cost and charge fields
+uncomp_care,NA,not directly available,not in PPS minimum dataset for this era
+depr_land,f2050,accumulated depreciation land,Worksheet G balance sheet
+depr_bldg,f2054,accumulated depreciation buildings,Worksheet G balance sheet; includes land improvements f2052
+depr_lease,f2056,accumulated depreciation leasehold improvements,Worksheet G balance sheet
+depr_fixed_equip,f2058,accumulated depreciation fixed equipment,Worksheet G balance sheet
+depr_auto,f2060,accumulated depreciation automobiles and trucks,Worksheet G balance sheet
+depr_major_equip,f2062,accumulated depreciation major movable equipment,Worksheet G balance sheet
+depr_minor_equip,f2064,accumulated depreciation minor depreciable equipment,Worksheet G balance sheet
+street,NA,not available,PPS has SSA state code (f71) but not full address
+city,NA,not available,
+state,f71,SSA state code,numeric code not state abbreviation; needs mapping
+zip,NA,not available,
+county,NA,not available,

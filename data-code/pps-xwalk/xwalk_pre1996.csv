@@ -1,0 +1,39 @@
+hcris_variable,pps_field,pps_label,notes,available_years
+provider_number,provno,provider number,also in f1,1985-1995
+name,provname,provider name,,1985-1995
+fy_start,begdate,beginning of cost reporting period,,1985-1995
+fy_end,enddate,end of cost reporting period,,1985-1995
+date_created,NA,not available,no file creation date in pre-1996,
+status,status,cost report status,,1985-1995
+beds,totbeds,total number of beds in hospital,,1985-1995
+tot_discharges,f88,total discharges hospital total,f88c excludes swing bed in 1989+,1985-1995
+mcare_discharges,f82,medicare discharges hospital total,f82b excludes swing bed in 1989+,1985-1995
+mcaid_discharges,f84,medicaid discharges hospital total,f84c excludes swing bed in 1989+,1985-1995
+tot_charges,totalg,total facility charges all cost centers,from Worksheet C cost allocation,1985-1995
+tot_discounts,NA,not available,revenue/expense statement not in pre-1996 minimum dataset,
+net_pat_rev,NA,not available,revenue/expense statement not in pre-1996 minimum dataset,
+tot_operating_exp,opertots,total medicare inpatient operating costs,Medicare-specific not total; closest available,1985-1995
+ip_charges,mtotalg,total inpatient hospital charges Medicare,Medicare inpatient charges only,1985-1995
+icu_charges,NA,not directly available,no total ICU charges in pre-1996; have cost (ticus) not charges,
+ancillary_charges,outpatg,total outpatient charges,not exactly ancillary; closest available,1985-1995
+tot_mcare_payment,amtdue,amount due provider before sequestration,total Medicare payment,1985-1995
+secondary_mcare_payment,NA,not directly available,individual components available (drgpric drgoutl educadj dsadjust gradpaym),
+cash,NA,not available,balance sheet not in pre-1996 minimum dataset,
+current_assets,NA,not available,balance sheet not in pre-1996 minimum dataset,
+current_liabilities,NA,not available,balance sheet not in pre-1996 minimum dataset,
+fixed_assets,NA,not available,balance sheet not in pre-1996 minimum dataset,
+new_cap_ass,NA,not available,capital asset detail not in pre-1996 minimum dataset,
+cost_to_charge,NA,not available,,
+uncomp_care,NA,not available,,
+depr_land,NA,not available,balance sheet not in pre-1996 minimum dataset,
+depr_bldg,NA,not available,,
+depr_lease,NA,not available,,
+depr_fixed_equip,NA,not available,,
+depr_auto,NA,not available,,
+depr_major_equip,NA,not available,,
+depr_minor_equip,NA,not available,,
+street,NA,not available,,
+city,NA,not available,,
+state,ssa,SSA state code,numeric code; first 2 digits of provider number,1985-1995
+zip,NA,not available,,
+county,NA,not available,,
