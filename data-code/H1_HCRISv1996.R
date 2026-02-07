@@ -35,6 +35,10 @@ hcris.vars <- rbind(hcris.vars,c('depr_major_equip','G000000','01801','0100','nu
 hcris.vars <- rbind(hcris.vars,c('depr_minor_equip','G000000','01901','0100','numeric'))
 hcris.vars <- rbind(hcris.vars,c('current_assets','G000000','01100','0100','numeric'))
 hcris.vars <- rbind(hcris.vars,c('current_liabilities','G000000','03600','0100','numeric'))
+hcris.vars <- rbind(hcris.vars,c('pps_ip_charges','C000001','10100','0600','numeric'))
+hcris.vars <- rbind(hcris.vars,c('pps_op_charges','C000001','10100','0700','numeric'))
+hcris.vars <- rbind(hcris.vars,c('pps_mcare_cost','D10A181','04900','0100','numeric'))
+hcris.vars <- rbind(hcris.vars,c('pps_pgm_cost','D10A181','05300','0100','numeric'))
 colnames(hcris.vars) <- c("variable","WKSHT_CD","LINE_NUM","CLMN_NUM","source")
 
 

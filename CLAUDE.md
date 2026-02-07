@@ -86,8 +86,30 @@ All extraction scripts pad provider numbers to 6 digits with leading zeros (`pad
 ### Data Source Flag
 Each extraction script tags rows: `data_source = "pps"` / `"v1996"` / `"v2010"`.
 
-## Status (2026-02-06)
+### PPS-Equivalent Variables for Imputation
+
+Pre-1996 PPS variables measure different things than their HCRIS counterparts:
+
+| Variable | PPS (pre-1996) definition | HCRIS v1996+ definition |
+|----------|--------------------------|------------------------|
+| `tot_operating_exp` | `opertots` — Medicare-specific operating costs | Total operating expenses (all payers) |
+| `tot_charges` | `totalg` — cost-allocation charges | Revenue-statement charges |
+| `ip_charges` | `mtotalg` — Medicare inpatient charges | Total inpatient charges |
+
+To support downstream imputation models that bridge these measurement systems, H1 extracts the cost-allocation equivalents from the HCRIS v1996 raw data (Form 2552-96 still contains both measurement systems on different worksheets):
+
+| Column | Source | Description |
+|--------|--------|-------------|
+| `pps_ip_charges` | Wkst C Part I (C000001), Line 101, Col 6 | Inpatient charges from cost allocation |
+| `pps_op_charges` | Wkst C Part I (C000001), Line 101, Col 7 | Outpatient charges from cost allocation |
+| `pps_mcare_cost` | Wkst D (D10A181), Line 49, Col 1 | Total Medicare inpatient operating costs |
+| `pps_pgm_cost` | Wkst D (D10A181), Line 53, Col 1 | Program inpatient operating cost (net of pass-throughs) |
+
+These are populated for v1996 rows (~98% coverage) and NA for PPS and v2010 rows. Downstream projects can train models on v1996 data where both measurement systems are observed, then apply to pre-1996 PPS data.
+
+## Status (2026-02-07)
 - PPS minimum dataset fully integrated: H3 + crosswalks + download script + all 19 Stata files downloaded.
+- PPS-equivalent variables (`pps_ip_charges`, `pps_op_charges`, `pps_mcare_cost`, `pps_pgm_cost`) extracted in H1 and carried through pipeline.
 - Capital files downloaded but intentionally deferred (see "PPS Capital Files" above).
 - `0_download_pps.R` handles both minimum dataset and capital file downloads.
 - Rscript in MINGW segfaults; run from RStudio or Windows terminal.

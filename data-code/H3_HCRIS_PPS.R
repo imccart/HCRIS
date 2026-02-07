@@ -143,7 +143,13 @@ for (i in 1996:1999) {
 
       ## balance sheet
       current_assets = as.numeric(f2048),
-      current_liabilities = as.numeric(f2081)
+      current_liabilities = as.numeric(f2081),
+
+      ## PPS-equivalent variables (only populated in v1996 HCRIS)
+      pps_ip_charges = NA_real_,
+      pps_op_charges = NA_real_,
+      pps_mcare_cost = NA_real_,
+      pps_pgm_cost = NA_real_
     )
 
   assign(paste0("final.reports.", i), final.reports)
@@ -230,7 +236,13 @@ for (i in 1985:1995) {
 
       ## balance sheet (not available pre-1996)
       current_assets = NA_real_,
-      current_liabilities = NA_real_
+      current_liabilities = NA_real_,
+
+      ## PPS-equivalent variables (only populated in v1996 HCRIS)
+      pps_ip_charges = NA_real_,
+      pps_op_charges = NA_real_,
+      pps_mcare_cost = NA_real_,
+      pps_pgm_cost = NA_real_
     )
 
   assign(paste0("final.reports.", i), final.reports)

@@ -13,8 +13,8 @@ pacman::p_load(tidyverse, ggplot2, dplyr, lubridate, haven)
 
 # Helpers (avoid -Inf and all-NA sums)
 na_sum <- function(x) if (all(is.na(x))) NA_real_ else sum(x, na.rm = TRUE)
-na_max <- function(x) if (all(is.na(x))) NA_real_ else max(x, na.rm = TRUE)
-na_min <- function(x) if (all(is.na(x))) NA_real_ else min(x, na.rm = TRUE)
+na_max <- function(x) if (all(is.na(x))) x[NA_integer_] else max(x, na.rm = TRUE)
+na_min <- function(x) if (all(is.na(x))) x[NA_integer_] else min(x, na.rm = TRUE)
 
 
 # Import data -------------------------------------------------------------
@@ -44,7 +44,8 @@ final.hcris.v1996 <- final.hcris.v1996 %>%
 
 ## create missing variables for columns in v1996 that we have to compute in v2010
 final.hcris.v2010 <- final.hcris.v2010 %>%
-  mutate(uncomp_care=tot_uncomp_care_charges - tot_uncomp_care_partial_pmts + bad_debt,
+  mutate(pps_ip_charges=NA, pps_op_charges=NA, pps_mcare_cost=NA, pps_pgm_cost=NA,
+         uncomp_care=tot_uncomp_care_charges - tot_uncomp_care_partial_pmts + bad_debt,
          accum_dep = if_else(
            if_all(starts_with("depr_"), is.na),
            NA_real_,
@@ -136,7 +137,11 @@ unique.hcris2 <-
             fixed_assets=na_sum(fixed_assets),
             accum_dep=na_sum(accum_dep),
             current_assets=na_sum(current_assets),
-            current_liabilities=na_sum(current_liabilities)
+            current_liabilities=na_sum(current_liabilities),
+            pps_ip_charges=na_sum(pps_ip_charges),
+            pps_op_charges=na_sum(pps_op_charges),
+            pps_mcare_cost=na_sum(pps_mcare_cost),
+            pps_pgm_cost=na_sum(pps_pgm_cost)
             ) %>%
   mutate(source='total for year')
 
@@ -166,7 +171,8 @@ duplicate.hcris3 <-
               "mcaid_discharges", "tot_mcare_payment", "secondary_mcare_payment",
               "hvbp_payment", "hrrp_payment", "uncomp_care", "tot_uncomp_care_charges", "bad_debt",
               "tot_uncomp_care_partial_pmts", "new_cap_ass", "cash", "net_pat_rev", "fixed_assets","accum_dep",
-              "current_assets","current_liabilities"),
+              "current_assets","current_liabilities",
+              "pps_ip_charges","pps_op_charges","pps_mcare_cost","pps_pgm_cost"),
             list(~ .*(time_diff/total_days)))
 
 ## form weighted average of values for each fiscal year
@@ -192,7 +198,9 @@ unique.hcris4 <-
             cash=na_sum(cash),
             net_pat_rev=na_sum(net_pat_rev),
             fixed_assets=na_sum(fixed_assets), accum_dep=na_sum(accum_dep),
-            current_assets=na_sum(current_assets), current_liabilities=na_sum(current_liabilities)) %>%
+            current_assets=na_sum(current_assets), current_liabilities=na_sum(current_liabilities),
+            pps_ip_charges=na_sum(pps_ip_charges), pps_op_charges=na_sum(pps_op_charges),
+            pps_mcare_cost=na_sum(pps_mcare_cost), pps_pgm_cost=na_sum(pps_pgm_cost)) %>%
   mutate(source='weighted_average')
 
   
