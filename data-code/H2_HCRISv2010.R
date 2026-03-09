@@ -46,12 +46,55 @@ colnames(hcris.vars) <- c("variable","WKSHT_CD","LINE_NUM","CLMN_NUM","source")
 
 
 # Import data -------------------------------------------------------------
-for (i in 2010:2020) {
-  HCRIS.alpha <- read_csv(paste0("data/input/HCRIS_v2010/HospitalFY",i,"/hosp10_",i,"_ALPHA.CSV"),
+
+## Helper: build file paths for each year, handling folder/file naming changes
+## and reading from ZIP archives when unzipped folders don't exist
+hcris_v2010_path <- function(year, suffix) {
+  base <- "data/input/HCRIS_v2010"
+
+  ## Try unzipped folder first (two naming conventions)
+  folders <- c(paste0("HospitalFY", year), paste0("HOSP10FY", year))
+  files <- c(paste0("hosp10_", year, "_", toupper(suffix), ".CSV"),
+             paste0("HOSP10_", year, "_", tolower(suffix), ".csv"))
+  for (folder in folders) {
+    for (file in files) {
+      path <- file.path(base, folder, file)
+      if (file.exists(path)) return(list(type="file", path=path))
+    }
+  }
+
+  ## Fall back to ZIP archive
+  zips <- c(paste0("HOSP10FY", year, ".ZIP"), paste0("HOSP10FY", year, ".zip"),
+            paste0("HospitalFY", year, ".ZIP"), paste0("HospitalFY", year, ".zip"))
+  zip_entries <- c(paste0("HOSP10_", year, "_", tolower(suffix), ".csv"),
+                   paste0("hosp10_", year, "_", toupper(suffix), ".CSV"))
+  for (zf in zips) {
+    zip_path <- file.path(base, zf)
+    if (file.exists(zip_path)) {
+      contents <- tryCatch(unzip(zip_path, list=TRUE)$Name, error=function(e) character(0))
+      for (entry in zip_entries) {
+        if (entry %in% contents) return(list(type="zip", path=zip_path, entry=entry))
+      }
+    }
+  }
+  stop(paste("Cannot find HCRIS v2010 data for year", year))
+}
+
+hcris_v2010_read <- function(year, suffix, col_names) {
+  loc <- hcris_v2010_path(year, suffix)
+  if (loc$type == "file") {
+    read_csv(loc$path, col_names=col_names, show_col_types=FALSE)
+  } else {
+    read_csv(unz(loc$path, loc$entry), col_names=col_names, show_col_types=FALSE)
+  }
+}
+
+for (i in 2010:2025) {
+  HCRIS.alpha <- hcris_v2010_read(i, "alpha",
                        col_names=c('RPT_REC_NUM','WKSHT_CD','LINE_NUM','CLMN_NUM','ITM_VAL_NUM'))
-  HCRIS.numeric <- read_csv(paste0("data/input/HCRIS_v2010/HospitalFY",i,"/hosp10_",i,"_NMRC.CSV"),
+  HCRIS.numeric <- hcris_v2010_read(i, "nmrc",
                          col_names=c('RPT_REC_NUM','WKSHT_CD','LINE_NUM','CLMN_NUM','ITM_VAL_NUM'))
-  HCRIS.report <- read_csv(paste0("data/input/HCRIS_v2010/HospitalFY",i,"/hosp10_",i,"_RPT.CSV"),
+  HCRIS.report <- hcris_v2010_read(i, "rpt",
                         col_names=c('RPT_REC_NUM','PRVDR_CTRL_TYPE_CD','PRVDR_NUM','NPI',
                                     'RPT_STUS_CD','FY_BGN_DT','FY_END_DT','PROC_DT',
                                     'INITL_RPT_SW','LAST_RPT_SW','TRNSMTL_NUM','FI_NUM',
