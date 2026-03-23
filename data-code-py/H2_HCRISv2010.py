@@ -11,6 +11,8 @@ import io
 import numpy as np
 import pandas as pd
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
 
 # Variable locations -------------------------------------------------------
 
@@ -75,7 +77,7 @@ def _resolve_path(year, suffix):
     Tries unzipped folders first (two naming conventions), then ZIP archives.
     Returns (path_or_buffer, label) where label is for logging.
     """
-    base = Path("data/input/HCRIS_v2010")
+    base = PROJECT_ROOT / "data" / "input" / "HCRIS_v2010"
 
     folders = [f"HospitalFY{year}", f"HOSP10FY{year}"]
     files = [
@@ -150,7 +152,7 @@ def extract_v2010():
         print(f"  v2010 {yr}: {len(final):,} reports")
 
     combined = pd.concat(frames, ignore_index=True)
-    combined.to_csv("data/output/HCRIS_Data_v2010.txt", sep="\t", index=False)
+    combined.to_csv(PROJECT_ROOT / "data" / "output" / "HCRIS_Data_v2010.txt", sep="\t", index=False)
     print(f"  v2010 total: {len(combined):,} rows written")
     return combined
 

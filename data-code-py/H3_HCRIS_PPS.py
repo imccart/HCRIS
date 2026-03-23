@@ -13,11 +13,13 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
 
 # SSA state code mapping ---------------------------------------------------
 
 SSA_STATE = pd.read_csv(
-    Path("data-code/pps-xwalk/ssa_state_codes.csv"),
+    PROJECT_ROOT / "data-code" / "pps-xwalk" / "ssa_state_codes.csv",
     dtype={"ssa_code": str, "state": str},
 )
 _STATE_MAP = dict(zip(SSA_STATE["ssa_code"], SSA_STATE["state"]))
@@ -97,7 +99,7 @@ def extract_pps_1996_1999():
     frames = []
     for yr in range(1996, 2000):
         yy = str(yr)[2:]
-        base = Path("data/input/hcris_pps_nber")
+        base = PROJECT_ROOT / "data" / "input" / "hcris_pps_nber"
         part1 = pd.read_stata(base / f"pps{yy}_f1_f1800.dta")
         part2 = pd.read_stata(base / f"pps{yy}_f1801_to_end.dta")
         part1["f1"] = pad_provider(part1["f1"]).values
@@ -164,7 +166,7 @@ def extract_pps_1985_1995():
     frames = []
     for yr in range(1985, 1996):
         yy = str(yr)[2:]
-        pps = pd.read_stata(Path("data/input/hcris_pps_nber") / f"pps{yy}.dta")
+        pps = pd.read_stata(PROJECT_ROOT / "data" / "input" / "hcris_pps_nber" / f"pps{yy}.dta")
         pps["provno"] = pad_provider(pps["provno"]).values
 
         df = pd.DataFrame({
@@ -228,7 +230,7 @@ def extract_pps():
     early = extract_pps_1985_1995()
     late = extract_pps_1996_1999()
     combined = pd.concat([early, late], ignore_index=True)
-    combined.to_csv("data/output/HCRIS_Data_PPS.txt", sep="\t", index=False)
+    combined.to_csv(PROJECT_ROOT / "data" / "output" / "HCRIS_Data_PPS.txt", sep="\t", index=False)
     print(f"  PPS total: {len(combined):,} rows written")
     return combined
 

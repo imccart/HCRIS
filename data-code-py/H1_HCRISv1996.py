@@ -8,6 +8,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
 
 # Variable locations -------------------------------------------------------
 
@@ -69,7 +71,7 @@ def extract_v1996():
     print("Extracting HCRIS v1996 (1998-2011)...")
     frames = []
     for yr in range(1998, 2012):
-        base = Path(f"data/input/HCRIS_v1996/HospitalFY{yr}")
+        base = PROJECT_ROOT / "data" / "input" / "HCRIS_v1996" / f"HospitalFY{yr}"
         alpha = pd.read_csv(base / f"hosp_{yr}_ALPHA.CSV", header=None, names=LONG_COLS, dtype=str)
         nmrc = pd.read_csv(base / f"hosp_{yr}_NMRC.CSV", header=None, names=LONG_COLS, dtype=str)
         rpt = pd.read_csv(base / f"hosp_{yr}_RPT.CSV", header=None, names=RPT_COLS, dtype=str)
@@ -99,7 +101,7 @@ def extract_v1996():
         print(f"  v1996 {yr}: {len(final):,} reports")
 
     combined = pd.concat(frames, ignore_index=True)
-    combined.to_csv("data/output/HCRIS_Data_v1996.txt", sep="\t", index=False)
+    combined.to_csv(PROJECT_ROOT / "data" / "output" / "HCRIS_Data_v1996.txt", sep="\t", index=False)
     print(f"  v1996 total: {len(combined):,} rows written")
     return combined
 

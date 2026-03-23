@@ -5,8 +5,13 @@ adds missing variables, deduplicates overlapping reports, and writes the
 final combined dataset.
 """
 
+from pathlib import Path
+import sys
 import numpy as np
 import pandas as pd
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from H3_HCRIS_PPS import extract_pps
 from H1_HCRISv1996 import extract_v1996
@@ -231,7 +236,7 @@ def main():
     final = final.rename(columns={"fyear": "year"}).sort_values(["provider_number", "year"]).reset_index(drop=True)
 
     # Write output
-    final.to_csv("data/output/HCRIS_Data.txt", sep="\t", index=False)
+    final.to_csv(PROJECT_ROOT / "data" / "output" / "HCRIS_Data.txt", sep="\t", index=False)
     print(f"Final dataset: {len(final):,} rows, {len(final.columns)} columns")
     print(f"Years: {int(final['year'].min())}-{int(final['year'].max())}")
     return final
